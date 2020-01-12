@@ -16,8 +16,15 @@ use Rx\Observable;
 
 final class MiddlewareCollector implements CollectorInterface
 {
+    /** @var string */
+    private $server;
     private $inflight = [];
     private $requests = [];
+
+    public function __construct(string $server)
+    {
+        $this->server = $server;
+    }
 
     public function __invoke(ServerRequestInterface $request, callable $next): PromiseInterface
     {
@@ -50,7 +57,9 @@ final class MiddlewareCollector implements CollectorInterface
                     'gauge',
                     'The number of HTTP requests that are currently inflight within the application'
                 ),
-                [],
+                [
+                    new Tag('server', $this->server),
+                ],
                 (static function (array $inflight) {
                     $methods = [];
 
@@ -70,7 +79,9 @@ final class MiddlewareCollector implements CollectorInterface
                     'counter',
                     'The number of HTTP requests handled by HTTP request method and response status code'
                 ),
-                [],
+                [
+                    new Tag('server', $this->server),
+                ],
                 (static function (array $requests) {
                     $methods = [];
 

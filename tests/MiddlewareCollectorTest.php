@@ -16,14 +16,14 @@ final class MemoryUsageCollectorTest extends AsyncTestCase
 {
     public function testCollectMemoryUsage(): void
     {
-        $collector = new MiddlewareCollector();
+        $collector = new MiddlewareCollector('test');
 
         /** @var Metric[] $metric */
         $metrics = $this->await(Promise::fromObservable($collector->collect()->toArray()));
         self::assertCount(2, $metrics);
         /** @var Metric $metric */
         foreach ($metrics as $metric) {
-            self::assertCount(0, $metric->tags());
+            self::assertCount(1, $metric->tags());
             self::assertCount(0, $metric->measurements());
         }
 
@@ -36,7 +36,7 @@ final class MemoryUsageCollectorTest extends AsyncTestCase
         self::assertCount(2, $metrics);
         /** @var Metric $metric */
         foreach ($metrics as $metric) {
-            self::assertCount(0, $metric->tags());
+            self::assertCount(1, $metric->tags());
             self::assertCount(1, $metric->measurements());
         }
     }
