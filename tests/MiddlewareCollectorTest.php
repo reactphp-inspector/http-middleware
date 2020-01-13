@@ -14,7 +14,7 @@ use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
  */
 final class MemoryUsageCollectorTest extends AsyncTestCase
 {
-    public function testCollectMemoryUsage(): void
+    public function testCollectMetrics(): void
     {
         $collector = new MiddlewareCollector('test');
 
@@ -27,9 +27,9 @@ final class MemoryUsageCollectorTest extends AsyncTestCase
             self::assertCount(0, $metric->measurements());
         }
 
-        $collector(new ServerRequest('GET', 'https://example.com/'), function () {
+        $this->await($collector(new ServerRequest('GET', 'https://example.com/'), function () {
             return new Response();
-        });
+        }));
 
         /** @var Metric[] $metric */
         $metrics = $this->await(Promise::fromObservable($collector->collect()->toArray()));

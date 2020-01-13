@@ -12,10 +12,13 @@ use ReactInspector\Config;
 use ReactInspector\Measurement;
 use ReactInspector\Metric;
 use ReactInspector\Tag;
+use ReactInspector\Tags;
 use Rx\Observable;
 
 final class MiddlewareCollector implements CollectorInterface
 {
+    public const TAGS_ATTRIBUTE = 'mnbhasdhkndsajkhdsahjksadjkhdsajkhdsa';
+
     /** @var string */
     private $server;
     private $inflight = [];
@@ -29,20 +32,23 @@ final class MiddlewareCollector implements CollectorInterface
     public function __invoke(ServerRequestInterface $request, callable $next): PromiseInterface
     {
         $method = \strtoupper($request->getMethod());
+        $tags = new Tags(new Tag('method', $method));
+        $request = $request->withAttribute(self::TAGS_ATTRIBUTE, $tags);
         if (!\array_key_exists($method, $this->inflight)) {
             $this->inflight[$method] = 0;
-            $this->requests[$method] = [];
         }
         $this->inflight[$method]++;
 
-        return resolve($next($request))->then(function (ResponseInterface $response) use ($method): ResponseInterface {
+        return resolve($next($request))->then(function (ResponseInterface $response) use ($method, $tags): ResponseInterface {
             $this->inflight[$method]--;
 
             $code = $response->getStatusCode();
-            if (!\array_key_exists($code, $this->requests[$method])) {
-                $this->requests[$method][$code] = 0;
+            $tags->add(new Tag('code', (string)$code));
+            $tags = (string)$tags;
+            if (!\array_key_exists($tags, $this->requests)) {
+                $this->requests[$tags] = 0;
             }
-            $this->requests[$method][$code]++;
+            $this->requests[$tags]++;
 
             return $response;
         });
@@ -83,19 +89,16 @@ final class MiddlewareCollector implements CollectorInterface
                     new Tag('server', $this->server),
                 ],
                 (static function (array $requests) {
-                    $methods = [];
+                    $measurements = [];
 
-                    foreach ($requests as $method => $codes) {
-                        foreach ($codes as $code => $count) {
-                            $methods[] = new Measurement(
-                                $count,
-                                new Tag('method', $method),
-                                new Tag('code', (string)$code),
-                            );
-                        }
+                    foreach ($requests as $tag => $count) {
+                        $measurements[] = new Measurement(
+                            $count,
+                            ...\array_values(Tags::fromString($tag)->get())
+                        );
                     }
 
-                    return $methods;
+                    return $measurements;
                 })($this->requests),
             ),
         ]);
