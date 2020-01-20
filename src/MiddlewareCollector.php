@@ -10,6 +10,7 @@ use function React\Promise\resolve;
 use ReactInspector\CollectorInterface;
 use ReactInspector\Config;
 use ReactInspector\Measurement;
+use ReactInspector\Measurements;
 use ReactInspector\Metric;
 use ReactInspector\Tag;
 use ReactInspector\Tags;
@@ -63,20 +64,20 @@ final class MiddlewareCollector implements CollectorInterface
                     'gauge',
                     'The number of HTTP requests that are currently inflight within the application'
                 ),
-                [
+                new Tags(
                     new Tag('server', $this->server),
-                ],
-                (static function (array $inflight) {
+                ),
+                (static function (array $inflight): Measurements {
                     $methods = [];
 
                     foreach ($inflight as $method => $count) {
                         $methods[] = new Measurement(
                             $count,
-                            new Tag('method', $method)
+                            new Tags(new Tag('method', $method))
                         );
                     }
 
-                    return $methods;
+                    return new Measurements(...$methods);
                 })($this->inflight),
             ),
             new Metric(
@@ -85,20 +86,20 @@ final class MiddlewareCollector implements CollectorInterface
                     'counter',
                     'The number of HTTP requests handled by HTTP request method and response status code'
                 ),
-                [
+                new Tags(
                     new Tag('server', $this->server),
-                ],
-                (static function (array $requests) {
+                ),
+                (static function (array $requests): Measurements {
                     $measurements = [];
 
                     foreach ($requests as $tag => $count) {
                         $measurements[] = new Measurement(
                             $count,
-                            ...\array_values(Tags::fromString($tag)->get())
+                            new Tags(...\array_values(Tags::fromString($tag)->get()))
                         );
                     }
 
-                    return $measurements;
+                    return new Measurements(...$measurements);
                 })($this->requests),
             ),
         ]);

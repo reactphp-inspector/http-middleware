@@ -23,8 +23,8 @@ final class MemoryUsageCollectorTest extends AsyncTestCase
         self::assertCount(2, $metrics);
         /** @var Metric $metric */
         foreach ($metrics as $metric) {
-            self::assertCount(1, $metric->tags());
-            self::assertCount(0, $metric->measurements());
+            self::assertCount(1, $metric->tags()->get());
+            self::assertCount(0, $metric->measurements()->get());
         }
 
         $this->await($collector(new ServerRequest('GET', 'https://example.com/'), function () {
@@ -36,8 +36,8 @@ final class MemoryUsageCollectorTest extends AsyncTestCase
         self::assertCount(2, $metrics);
         /** @var Metric $metric */
         foreach ($metrics as $metric) {
-            self::assertCount(1, $metric->tags());
-            self::assertCount(1, $metric->measurements());
+            self::assertCount(1, $metric->tags()->get());
+            self::assertCount(1, $metric->measurements()->get());
         }
     }
 }
