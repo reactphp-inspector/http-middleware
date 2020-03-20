@@ -1,11 +1,11 @@
 # Measure HTTP requests going through an react/http
 
-[![Linux Build Status](https://travis-ci.com/reactphp-inspector/http-middleware.png)](https://travis-ci.com/reactphp-inspector/http-middleware)
+![Continuous Integration](https://github.com/reactphp-inspector/http-middleware/workflows/Continuous%20Integration/badge.svg)
 [![Latest Stable Version](https://poser.pugx.org/react-inspector/http-middleware/v/stable.png)](https://packagist.org/packages/react-inspector/http-middleware)
-[![Total Downloads](https://poser.pugx.org/react-inspector/http-middleware/downloads.png)](https://packagist.org/packages/react-inspector/http-middleware)
+[![Total Downloads](https://poser.pugx.org/react-inspector/http-middleware/downloads.png)](https://packagist.org/packages/react-inspector/http-middleware/stats)
 [![Code Coverage](https://scrutinizer-ci.com/g/reactphp-inspector/http-middleware/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/reactphp-inspector/http-middleware/?branch=master)
+[![Type Coverage](https://shepherd.dev/github/reactphp-inspector/http-middleware/coverage.svg)](https://shepherd.dev/github/reactphp-inspector/http-middleware)
 [![License](https://poser.pugx.org/react-inspector/http-middleware/license.png)](https://packagist.org/packages/react-inspector/http-middleware)
-[![PHP 7 ready](http://php7ready.timesplinter.ch/reactphp-inspector/http-middleware/badge.svg)](https://travis-ci.com/reactphp-inspector/http-middleware)
 
 ### Installation ###
 
