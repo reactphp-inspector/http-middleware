@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ReactInspector\HttpMiddleware;
 
@@ -13,7 +15,9 @@ use ReactInspector\Metric;
 use ReactInspector\Tag;
 use ReactInspector\Tags;
 use Rx\Observable;
+
 use function ApiClients\Tools\Rx\observableFromArray;
+use function array_key_exists;
 use function array_values;
 use function React\Promise\resolve;
 use function strtoupper;
@@ -40,6 +44,10 @@ final class MiddlewareCollector implements CollectorInterface
         $method  = strtoupper($request->getMethod());
         $tags    = new Tags(new Tag('method', $method));
         $request = $request->withAttribute(self::TAGS_ATTRIBUTE, $tags);
+        if (! array_key_exists($method, $this->inflight)) {
+            $this->inflight[$method] = 0;
+        }
+
         $this->inflight[$method]++;
 
         return resolve($next($request))->then(function (ResponseInterface $response) use ($method, $tags): ResponseInterface {
@@ -48,6 +56,11 @@ final class MiddlewareCollector implements CollectorInterface
             $code = $response->getStatusCode();
             $tags->add(new Tag('code', (string) $code));
             $tags = (string) $tags;
+
+            if (! array_key_exists($tags, $this->requests)) {
+                $this->requests[$tags] = 0;
+            }
+
             $this->requests[$tags]++;
 
             return $response;
