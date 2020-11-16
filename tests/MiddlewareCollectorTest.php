@@ -7,51 +7,43 @@ namespace ReactInspector\Tests\HttpMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
+use ReactInspector\HttpMiddleware\Metrics;
 use ReactInspector\HttpMiddleware\MiddlewareCollector;
-use ReactInspector\Metric;
 use RingCentral\Psr7\Response;
 use RingCentral\Psr7\ServerRequest;
-use Rx\React\Promise;
 use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
+use WyriHaximus\Metrics\Factory;
+use WyriHaximus\Metrics\Label;
+use WyriHaximus\Metrics\Printer\Prometheus;
 
-use function array_key_exists;
+use function Safe\sleep;
 
-/**
- * @internal
- */
 final class MiddlewareCollectorTest extends AsyncTestCase
 {
-    public function testCollectMetrics(): void
+    /**
+     * @test
+     */
+    public function collectMetrics(): void
     {
-        $collector = new MiddlewareCollector('test');
+        $registry  = Factory::create();
+        $collector = new MiddlewareCollector(Metrics::create($registry, new Label('server', 'test')));
 
-        /** @var Metric[] $metrics */
-        $metrics = $this->await(Promise::fromObservable($collector->collect()->toArray()));
-        self::assertCount(2, $metrics);
-        foreach ($metrics as $metric) {
-            self::assertCount(1, $metric->tags()->get());
-            self::assertCount(0, $metric->measurements()->get());
-        }
+        $metrics = $registry->print(new Prometheus());
+        self::assertSame("\n\n\n", $metrics);
 
-        $this->await($collector(new ServerRequest('get', 'https://example.com/'), static function (): ResponseInterface {
+        $collector(new ServerRequest('get', 'https://example.com/'), static function (): ResponseInterface {
+            sleep(1);
+
             return new Response();
-        }));
+        });
         $collector(new ServerRequest('GET', 'https://example.com/'), static function (): PromiseInterface {
             return (new Deferred())->promise();
         });
 
-        /** @var Metric[] $metrics */
-        $metrics = $this->await(Promise::fromObservable($collector->collect()->toArray()));
-        self::assertCount(2, $metrics);
-        foreach ($metrics as $metric) {
-            self::assertCount(1, $metric->tags()->get());
-            self::assertCount(1, $metric->measurements()->get());
-            self::assertSame(1.0, $metric->measurements()->get()[0]->value());
-            if (! array_key_exists('code', $metric->tags()->get())) {
-                continue;
-            }
-
-            self::assertSame('200', $metric->tags()->get()['code']->value());
-        }
+        $metrics = $registry->print(new Prometheus());
+        self::assertStringContainsString('http_requests_total{code="200",method="GET",server="test"} 1', $metrics);
+        self::assertStringContainsString('http_requests_inflight{method="GET",server="test"} 1', $metrics);
+        self::assertStringContainsString('http_response_times{quantile="0.1",code="200",method="GET",server="test"} 1.00', $metrics);
+        self::assertStringContainsString('http_response_times{quantile="0.99",code="200",method="GET",server="test"} 1.00', $metrics);
     }
 }

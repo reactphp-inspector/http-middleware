@@ -10,12 +10,17 @@
     },
     "mutators": {
         "@default": true,
-        "UnwrapStrToUpper": {
+        "Division": {
             "ignore": [
                 "ReactInspector\\HttpMiddleware\\MiddlewareCollector::__invoke"
             ]
         },
         "MethodCallRemoval": {
+            "ignore": [
+                "ReactInspector\\HttpMiddleware\\MiddlewareCollector::__invoke"
+            ]
+        },
+        "UnwrapStrToUpper": {
             "ignore": [
                 "ReactInspector\\HttpMiddleware\\MiddlewareCollector::__invoke"
             ]
