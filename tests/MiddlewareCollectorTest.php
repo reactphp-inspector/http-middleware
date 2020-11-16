@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ReactInspector\Tests\HttpMiddleware;
 
@@ -11,6 +13,7 @@ use RingCentral\Psr7\Response;
 use RingCentral\Psr7\ServerRequest;
 use Rx\React\Promise;
 use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
+
 use function array_key_exists;
 
 /**
