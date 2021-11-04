@@ -8,7 +8,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Promise\PromiseInterface;
 use WyriHaximus\Metrics\Label;
-use WyriHaximus\Metrics\Registry;
+use WyriHaximus\Metrics\Registry\Counters;
+use WyriHaximus\Metrics\Registry\Gauges;
+use WyriHaximus\Metrics\Registry\Summaries;
 
 use function hrtime;
 use function React\Promise\resolve;
@@ -21,11 +23,11 @@ final class MiddlewareCollector
     /** @var array<Label> */
     private array $defaultLabels;
 
-    private Registry\Gauges $inflight;
+    private Gauges $inflight;
 
-    private Registry\Counters $requests;
+    private Counters $requests;
 
-    private Registry\Summaries $responseTime;
+    private Summaries $responseTime;
 
     public function __construct(Metrics $metrics)
     {
