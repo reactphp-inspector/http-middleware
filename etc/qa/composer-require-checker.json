@@ -3,8 +3,8 @@
     "null", "true", "false",
     "static", "self", "parent",
     "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object",
-    "Safe\\ksort", "React\\Promise\\all", "ApiClients\\Tools\\Rx\\observableFromArray",
-    "Safe\\sprintf", "ApiClients\\Tools\\Rx\\unwrapObservableFromPromise"
+    "Safe\\date", "WyriHaximus\\Constants\\Boolean\\FALSE_", "WyriHaximus\\Constants\\Boolean\\TRUE_",
+    "WyriHaximus\\Constants\\Numeric\\ONE", "WyriHaximus\\Constants\\Numeric\\ZERO"
   ],
   "php-core-extensions" : [
     "Core",
