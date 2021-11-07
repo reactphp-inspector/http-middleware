@@ -18,7 +18,7 @@
   "require-dev": {
     "ringcentral/psr7": "^1.3.0",
     "thecodingmachine/safe": "^1.2",
-    "wyrihaximus/async-test-utilities": "^3.2 || ^4.0"
+    "wyrihaximus/async-test-utilities": "^4.0.6"
   },
   "config": {
     "platform": {

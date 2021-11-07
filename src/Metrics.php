@@ -6,7 +6,11 @@ namespace ReactInspector\HttpMiddleware;
 
 use WyriHaximus\Metrics\Factory;
 use WyriHaximus\Metrics\Label;
+use WyriHaximus\Metrics\Label\Name;
 use WyriHaximus\Metrics\Registry;
+use WyriHaximus\Metrics\Registry\Counters;
+use WyriHaximus\Metrics\Registry\Gauges;
+use WyriHaximus\Metrics\Registry\Summaries;
 
 use function array_map;
 
@@ -15,11 +19,11 @@ final class Metrics
     /** @var array<Label> */
     private array $defaultLabels;
 
-    private Registry\Gauges $inflight;
-    private Registry\Counters $requests;
-    private Registry\Summaries $responseTime;
+    private Gauges $inflight;
+    private Counters $requests;
+    private Summaries $responseTime;
 
-    public function __construct(Registry\Gauges $inflight, Registry\Counters $requests, Registry\Summaries $responseTime, Label ...$defaultLabels)
+    public function __construct(Gauges $inflight, Counters $requests, Summaries $responseTime, Label ...$defaultLabels)
     {
         $this->inflight      = $inflight;
         $this->requests      = $requests;
@@ -29,28 +33,28 @@ final class Metrics
 
     public static function create(Registry $registry, Label ...$defaultLabels): self
     {
-        $defaultLabelNames = array_map(static fn (Label $label): Label\Name => new Label\Name($label->name()), $defaultLabels);
+        $defaultLabelNames = array_map(static fn (Label $label): Name => new Name($label->name()), $defaultLabels);
 
         return new self(
             $registry->gauge(
                 'http_requests_inflight',
                 'The number of HTTP requests that are currently inflight within the application',
-                new Label\Name('method'),
+                new Name('method'),
                 ...$defaultLabelNames
             ),
             $registry->counter(
                 'http_requests',
                 'The number of HTTP requests handled by HTTP request method and response status code',
-                new Label\Name('method'),
-                new Label\Name('code'),
+                new Name('method'),
+                new Name('code'),
                 ...$defaultLabelNames
             ),
             $registry->summary(
                 'http_response_times',
                 'The time it took to come to a response by HTTP request method and response status code',
                 Factory::defaultQuantiles(),
-                new Label\Name('method'),
-                new Label\Name('code'),
+                new Name('method'),
+                new Name('code'),
                 ...$defaultLabelNames
             ),
             ...$defaultLabels
@@ -65,17 +69,17 @@ final class Metrics
         return $this->defaultLabels;
     }
 
-    public function inflight(): Registry\Gauges
+    public function inflight(): Gauges
     {
         return $this->inflight;
     }
 
-    public function requests(): Registry\Counters
+    public function requests(): Counters
     {
         return $this->requests;
     }
 
-    public function responseTime(): Registry\Summaries
+    public function responseTime(): Summaries
     {
         return $this->responseTime;
     }
