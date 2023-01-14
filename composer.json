@@ -20,12 +20,6 @@
     "thecodingmachine/safe": "^1.2",
     "wyrihaximus/async-test-utilities": "^4.0.6"
   },
-  "config": {
-    "platform": {
-      "php": "7.4.7"
-    },
-    "sort-packages": true
-  },
   "autoload": {
     "psr-4": {
       "ReactInspector\\HttpMiddleware\\": "src/"
@@ -35,6 +29,18 @@
     "psr-4": {
       "ReactInspector\\Tests\\HttpMiddleware\\": "tests/"
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "ergebnis/composer-normalize": true,
+      "icanhazstring/composer-unused": true,
+      "infection/extension-installer": true
+    },
+    "platform": {
+      "php": "7.4.7"
+    },
+    "sort-packages": true
   },
   "scripts": {
     "post-install-cmd": [
