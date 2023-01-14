@@ -1,38 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
-  ],
-  "labels": [
-    "Dependencies 📦",
-    "PHP 🐘"
-  ],
+  "extends": ["config:base"],
+  "labels": [ "Dependencies 📦", "PHP 🐘"],
   "enabledManagers": [
     "composer"
   ],
   "packageRules": [
     {
-      "matchManagers": [
-        "composer"
-      ],
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "rangeStrategy": "widen"
+      "matchManagers": ["composer"],
+      "matchDepTypes": ["devDependencies"],
+      "rangeStrategy": "auto"
     },
     {
-      "matchManagers": [
-        "composer"
-      ],
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "rangeStrategy": "bump"
-    },
-    {
-      "matchManagers": [
-        "composer"
-      ],
+      "matchManagers": ["composer"],
       "rangeStrategy": "auto"
     }
   ]
