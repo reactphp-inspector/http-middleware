@@ -19,15 +19,8 @@ final class Metrics
     /** @var array<Label> */
     private array $defaultLabels;
 
-    private Gauges $inflight;
-    private Counters $requests;
-    private Summaries $responseTime;
-
-    public function __construct(Gauges $inflight, Counters $requests, Summaries $responseTime, Label ...$defaultLabels)
+    public function __construct(private Gauges $inflight, private Counters $requests, private Summaries $responseTime, Label ...$defaultLabels)
     {
-        $this->inflight      = $inflight;
-        $this->requests      = $requests;
-        $this->responseTime  = $responseTime;
         $this->defaultLabels = $defaultLabels;
     }
 
@@ -40,14 +33,14 @@ final class Metrics
                 'http_requests_inflight',
                 'The number of HTTP requests that are currently inflight within the application',
                 new Name('method'),
-                ...$defaultLabelNames
+                ...$defaultLabelNames,
             ),
             $registry->counter(
                 'http_requests',
                 'The number of HTTP requests handled by HTTP request method and response status code',
                 new Name('method'),
                 new Name('code'),
-                ...$defaultLabelNames
+                ...$defaultLabelNames,
             ),
             $registry->summary(
                 'http_response_times',
@@ -55,15 +48,13 @@ final class Metrics
                 Factory::defaultQuantiles(),
                 new Name('method'),
                 new Name('code'),
-                ...$defaultLabelNames
+                ...$defaultLabelNames,
             ),
-            ...$defaultLabels
+            ...$defaultLabels,
         );
     }
 
-    /**
-     * @return array<Label>
-     */
+    /** @return array<Label> */
     public function defaultLabels(): array
     {
         return $this->defaultLabels;

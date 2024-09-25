@@ -12,8 +12,8 @@ use WyriHaximus\Metrics\Registry\Counters;
 use WyriHaximus\Metrics\Registry\Gauges;
 use WyriHaximus\Metrics\Registry\Summaries;
 
-use function hrtime;
 use function React\Promise\resolve;
+use function Safe\hrtime;
 use function strtoupper;
 
 final class MiddlewareCollector
@@ -37,6 +37,7 @@ final class MiddlewareCollector
         $this->responseTime  = $metrics->responseTime();
     }
 
+    /** @return PromiseInterface<ResponseInterface> */
     public function __invoke(ServerRequestInterface $request, callable $next): PromiseInterface
     {
         $method = strtoupper($request->getMethod());
@@ -45,17 +46,18 @@ final class MiddlewareCollector
         $time = hrtime(true);
 
         return resolve($next($request))->then(function (ResponseInterface $response) use ($method, $gauge, $time): ResponseInterface {
+            /** @psalm-suppress PossiblyInvalidOperand */
             $this->responseTime->summary(
                 new Label('method', $method),
                 new Label('code', (string) $response->getStatusCode()),
-                ...$this->defaultLabels
+                ...$this->defaultLabels,
             )->observe(
-                (hrtime(true) - $time) / 1e+9
+                (hrtime(true) - $time) / 1e+9, /** @phpstan-ignore-line */
             );
             $this->requests->counter(
                 new Label('method', $method),
                 new Label('code', (string) $response->getStatusCode()),
-                ...$this->defaultLabels
+                ...$this->defaultLabels,
             )->incr();
             $gauge->dcr();
 
