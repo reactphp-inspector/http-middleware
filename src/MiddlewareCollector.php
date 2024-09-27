@@ -18,7 +18,7 @@ use function strtoupper;
 
 final class MiddlewareCollector
 {
-    public const TAGS_ATTRIBUTE = '25376cd37c51a221b5b0a82dd0b2f4f6';
+    public const LABELS_ATTRIBUTE = 'react-inspector-http-middleware-labels-iugioawfe';
 
     /** @var array<Label> */
     private array $defaultLabels;
@@ -43,14 +43,17 @@ final class MiddlewareCollector
         $method = strtoupper($request->getMethod());
         $gauge  = $this->inflight->gauge(new Label('method', $method), ...$this->defaultLabels);
         $gauge->incr();
-        $time = hrtime(true);
+        $labels  = new Labels();
+        $request = $request->withAttribute(self::LABELS_ATTRIBUTE, $labels);
+        $time    = hrtime(true);
 
-        return resolve($next($request))->then(function (ResponseInterface $response) use ($method, $gauge, $time): ResponseInterface {
+        return resolve($next($request))->then(function (ResponseInterface $response) use ($method, $gauge, $time, $labels): ResponseInterface {
             /** @psalm-suppress PossiblyInvalidOperand */
             $this->responseTime->summary(
                 new Label('method', $method),
                 new Label('code', (string) $response->getStatusCode()),
                 ...$this->defaultLabels,
+                ...$labels->labels(),
             )->observe(
                 (hrtime(true) - $time) / 1e+9, /** @phpstan-ignore-line */
             );
@@ -58,6 +61,7 @@ final class MiddlewareCollector
                 new Label('method', $method),
                 new Label('code', (string) $response->getStatusCode()),
                 ...$this->defaultLabels,
+                ...$labels->labels(),
             )->incr();
             $gauge->dcr();
 
