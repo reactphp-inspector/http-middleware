@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace ReactInspector\Tests\HttpMiddleware;
 
+use Nyholm\Psr7\Response;
+use Nyholm\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 use ReactInspector\HttpMiddleware\Metrics;
 use ReactInspector\HttpMiddleware\MiddlewareCollector;
-use RingCentral\Psr7\Response;
-use RingCentral\Psr7\ServerRequest;
 use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
 use WyriHaximus\Metrics\Factory;
 use WyriHaximus\Metrics\Label;
