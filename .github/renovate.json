@@ -1,19 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "labels": [ "Dependencies 📦", "PHP 🐘"],
-  "enabledManagers": [
-    "composer"
-  ],
-  "packageRules": [
-    {
-      "matchManagers": ["composer"],
-      "matchDepTypes": ["devDependencies"],
-      "rangeStrategy": "auto"
-    },
-    {
-      "matchManagers": ["composer"],
-      "rangeStrategy": "auto"
-    }
+  "extends": [
+    "github>WyriHaximus/renovate-config:php-package"
   ]
 }
